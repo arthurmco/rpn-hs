@@ -63,10 +63,10 @@ consumeOperation :: (Fractional a) => [a] -> Operation -> a
 consumeOperation [] _ = 0
 consumeOperation [v] _ = v
 consumeOperation (x:xs) op =
-  case op of OpAdd -> x + (consumeOperation xs op)
-             OpSub -> x - (consumeOperation xs op)
-             OpMul -> x * (consumeOperation xs op)
-             OpDiv -> x / (consumeOperation xs op)
+  case op of OpAdd -> (consumeOperation xs op) + x
+             OpSub -> (consumeOperation xs op) - x
+             OpMul -> (consumeOperation xs op) * x
+             OpDiv -> (consumeOperation xs op) / x
 
 
 readOperation v = consumeOperations [] $ decodeTokens $ splitCalculations v
