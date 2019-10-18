@@ -9,3 +9,6 @@ This repo was made for
 
 Also, every programmer nowadays has at least one repository with 
 functional programming code. :wink: 
+
+Partially based on [this
+one](http://learnyouahaskell.com/functionally-solving-problems#reverse-polish-notation-calculator).
