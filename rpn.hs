@@ -1,6 +1,16 @@
 -- Reverse Polish calculator
+-- Does not support functions with more than 2 parameters
 
 data Operation = OpAdd | OpSub | OpMul | OpDiv deriving Show
+
+-- | Get the parameter count of an operation
+-- |
+-- | We use `Num` instead of an integer so we can combine this operation
+-- | with anothers and not get a type error
+-- |
+-- | If there is no limit, return Nothing, else return the count
+getParameterLimit :: (Num a) => Operation -> Maybe a
+getParameterLimit _ = Nothing
 
 
 stringToToken :: (Fractional a, Read a) => String -> Either Operation a
@@ -29,22 +39,32 @@ decodeTokens = map stringToToken
 -- |   30
 -- |
 -- | When we have an unique value, it will return said value
-consumeOperations :: (Fractional a) => [Either Operation a] -> a
-consumeOperations [] = 0
-consumeOperations [Left _] = 0
-consumeOperations [Right val] = val
-consumeOperations (val1:val2:op:xs) =
-  let Right v1 = val1
-      Right v2 = val2
-  in
-    case op of Left OpAdd -> consumeOperations $ (Right (v1 + v2)):xs
-               Left OpSub -> consumeOperations $ (Right (v1 - v2)):xs
-               Left OpMul -> consumeOperations $ (Right (v1 * v2)):xs
-               Left OpDiv -> consumeOperations $ (Right (v1 / v2)):xs
-               Right v -> consumeOperations $ xs
-  
-  
+consumeOperations :: (Fractional a) => [a] -> [Either Operation a] -> a
+consumeOperations _ [] = 1000
+consumeOperations _ [Right val] = val
+consumeOperations values [Left op] =  consumeOperation values op
+consumeOperations values (token:xs) =
+  case token of Right val -> let res = val:values
+                             in
+                               consumeOperations res xs
+                Left op ->
+                  let opres = consumeOperation values op
+                      res = (Right opres):xs
+                  in
+                    consumeOperations [] res
 
+
+-- | Consume one single operation, for unlimited parameters
+-- |
+-- | The list of fractionals are the values
+consumeOperation :: (Fractional a) => [a] -> Operation -> a
+consumeOperation [] _ = 0
+consumeOperation [v] _ = v
+consumeOperation (x:xs) op =
+  case op of OpAdd -> x + (consumeOperation xs op)
+             OpSub -> x - (consumeOperation xs op)
+             OpMul -> x * (consumeOperation xs op)
+             OpDiv -> x / (consumeOperation xs op)
 
 
 
