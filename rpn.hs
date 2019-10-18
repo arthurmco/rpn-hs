@@ -3,8 +3,8 @@
 data Operation = OpAdd | OpSub | OpMul | OpDiv deriving Show
 
 
-stringToOperation :: (Fractional a, Read a) => String -> Either Operation a
-stringToOperation v =
+stringToToken :: (Fractional a, Read a) => String -> Either Operation a
+stringToToken v =
   case v of "+" -> Left OpAdd
             "-" -> Left OpSub
             "*" -> Left OpMul
@@ -16,7 +16,7 @@ stringToOperation v =
 splitCalculations = words
 
 -- | Decode the split calculations in arrays of operations and operands
-decodeTokens = map stringToOperation
+decodeTokens = map stringToToken
 
 
 -- | Consume a list of operations and bring the result
