@@ -1,3 +1,5 @@
+import Control.Monad
+
 -- Reverse Polish calculator
 -- Does not support functions with more than 2 parameters
 
@@ -67,6 +69,20 @@ consumeOperation (x:xs) op =
              OpDiv -> x / (consumeOperation xs op)
 
 
+readOperation v = consumeOperations [] $ decodeTokens $ splitCalculations v
 
+runShell = do
+  line <- getLine
+  when (line /= "exit") $ do
+    putStrLn $ show . readOperation $ line
+    runShell
+
+main = do
+  putStrLn "RPN calculator"
+  putStrLn "(C) 2019 Arthur Mendes - under public domain"
+  putStrLn ""
+  putStrLn "Type exit to end"
+  putStrLn ""
+  runShell
 
 
